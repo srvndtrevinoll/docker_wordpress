@@ -1,0 +1,29 @@
+version: "3.3"
+    
+services:
+    db:
+        image: mariadb:10.6.2
+        restart: unless-stopped
+        volumes:
+            - ./mysql:/var/lib/mysql
+        environment:
+            - MYSQL_ROOT_PASSWORD=rootpass
+            - MYSQL_DATABASE=wordpress
+            - MYSQL_USER=manager
+            - MYSQL_PASSWORD=mysqlpass
+        network_mode: host
+    
+    web:
+        image: wordpress:5.7.2
+        depends_on:
+            - db
+        volumes:
+            - ./html:/var/www/html
+            - ./wordpress.ini:/usr/local/etc/php/conf.d/wordpress.ini 
+        environment:
+            - WORDPRESS_DB_USER=manager
+            - WORDPRESS_DB_PASSWORD=mysqlpass
+            - WORDPRESS_DB_HOST=127.0.0.1:3306
+        ports:
+            - 8000:80
+        network_mode: host
